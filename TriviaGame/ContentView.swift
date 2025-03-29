@@ -133,12 +133,28 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .padding(.top, 20)
                 
+                // Number of Questions (Slider)
+                HStack {
+                    Text("Number of Questions: \(numberOfQuestions)")
+                    Spacer()
+                }
+                .padding(.horizontal)
+                
+                Slider(
+                    value: Binding(
+                        get: { Double(numberOfQuestions) },
+                        set: { numberOfQuestions = Int($0) }
+                    ),
+                    in: 1...50,
+                    step: 1
+                )
+                .padding(.horizontal)
+                
                 // Category
                 HStack {
                     Text("Select Category")
                     Spacer()
                     Picker("Category", selection: $selectedCategory) {
-                        // For demonstration, a few categories:
                         Text("Any Category").tag(0)
                         Text("General (9)").tag(9)
                         Text("Sports (21)").tag(21)
@@ -162,15 +178,14 @@ struct ContentView: View {
                     Text("Select Type")
                     Spacer()
                     Picker("Question Type", selection: $selectedQuestionType) {
-                        // “multiple” or “boolean” (true/false)
-                        Text("Any Type").tag(QuestionType.multiple)
+                        Text("Multiple").tag(QuestionType.multiple)
                         Text("True / False").tag(QuestionType.boolean)
                     }
                     .pickerStyle(MenuPickerStyle())
                 }
                 .padding(.horizontal)
                 
-                // Timer Duration slider
+                // Timer Duration slider (if you need it)
                 HStack {
                     Text("Timer Duration: \(timerDuration) seconds")
                     Spacer()
@@ -201,15 +216,22 @@ struct ContentView: View {
             .navigationBarHidden(true)
         }
     }
+
     
     // MARK: - Quiz Screen
     private var quizScreen: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 8) {
                 Text("Quiz Time!")
                     .font(.largeTitle)
-                    .padding()
+                    .padding(.top)
                 
+                // Display the selected timer duration
+                Text("You have \(timerDuration) seconds")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                // Existing List of questions
                 List {
                     ForEach(questions.indices, id: \.self) { index in
                         let question = questions[index]
@@ -247,6 +269,7 @@ struct ContentView: View {
             .navigationTitle("Trivia")
         }
     }
+
     
     // MARK: - Results Screen
     private func resultsScreen(score: Int) -> some View {
